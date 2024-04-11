@@ -20,14 +20,14 @@ def edgeListGeneration(rects):
                 edgeList.append((i, j))
     return edgeList
 
-def rewardILP(n, edgeList):
+def rewardLP(n, edgeList):
     c = cplex.Cplex()
     c.objective.set_sense(c.objective.sense.maximize)
-    c.set_problem_name("BinaryIntegerLinearProgram")
+    c.set_problem_name("BinaryLinearProgram")
     t = c.variables.type
 
     var_names = ["x" + str(i) for i in range(n)]
-    types = [t.binary] * n  # Values are binary
+    types = [t.continuous] * n  # Values are continuous
     
     indices = c.variables.add(names = var_names, lb = [0] * n, ub = [1] * n, types = types)
 
@@ -47,6 +47,7 @@ def rewardILP(n, edgeList):
     for name in var_names:
         print(name, "=", c.solution.get_values(name))
 
+        
 # rects = [Rectangle(bottomLeft=(66, 8), topRight=(68, 40)), Rectangle(bottomLeft=(37, 7), topRight=(50, 68)), Rectangle(bottomLeft=(17, 12), topRight=(93, 58)), Rectangle(bottomLeft=(5, 16), topRight=(86, 90)), Rectangle(bottomLeft=(2, 37), topRight=(18, 72)), Rectangle(bottomLeft=(16, 23), topRight=(98, 94)), Rectangle(bottomLeft=(42, 3), topRight=(56, 93)), Rectangle(bottomLeft=(59, 31), topRight=(90, 78)), Rectangle(bottomLeft=(47, 18), topRight=(63, 96)), Rectangle(bottomLeft=(16, 55), topRight=(74, 73))]
 # rects = [Rectangle(bottomLeft=(1, 1), topRight=(5, 5)), Rectangle(bottomLeft=(95, 1), topRight=(99, 5)), Rectangle(bottomLeft=(50, 95), topRight=(55, 99)), Rectangle(bottomLeft=(2, 2), topRight=(97, 97))]
 # rects = [Rectangle(bottomLeft=(59, 41), topRight=(78, 52)), Rectangle(bottomLeft=(20, 51), topRight=(72, 57)), Rectangle(bottomLeft=(45, 24), topRight=(61, 52)), Rectangle(bottomLeft=(61, 62), topRight=(99, 71)), Rectangle(bottomLeft=(24, 8), topRight=(53, 37)), Rectangle(bottomLeft=(48, 2), topRight=(59, 18)), Rectangle(bottomLeft=(13, 36), topRight=(21, 83)), Rectangle(bottomLeft=(21, 75), topRight=(42, 98)), Rectangle(bottomLeft=(33, 23), topRight=(52, 71)), Rectangle(bottomLeft=(18, 47), topRight=(27, 80)), Rectangle(bottomLeft=(12, 46), topRight=(93, 51)), Rectangle(bottomLeft=(25, 19), topRight=(39, 65)), Rectangle(bottomLeft=(24, 60), topRight=(100, 69)), Rectangle(bottomLeft=(38, 27), topRight=(86, 54)), Rectangle(bottomLeft=(47, 16), topRight=(80, 20)), Rectangle(bottomLeft=(3, 70), topRight=(5, 77)), Rectangle(bottomLeft=(71, 40), topRight=(97, 71)), Rectangle(bottomLeft=(4, 35), topRight=(93, 94)), Rectangle(bottomLeft=(16, 2), topRight=(96, 44)), Rectangle(bottomLeft=(16, 71), topRight=(62, 80)), Rectangle(bottomLeft=(46, 14), topRight=(79, 54)), Rectangle(bottomLeft=(2, 31), topRight=(33, 71)), Rectangle(bottomLeft=(70, 18), topRight=(85, 46)), Rectangle(bottomLeft=(13, 15), topRight=(31, 18)), Rectangle(bottomLeft=(58, 21), topRight=(67, 67)), Rectangle(bottomLeft=(94, 87), topRight=(95, 88)), Rectangle(bottomLeft=(60, 72), topRight=(82, 93)), Rectangle(bottomLeft=(10, 88), topRight=(89, 93)), Rectangle(bottomLeft=(27, 55), topRight=(31, 75)), Rectangle(bottomLeft=(24, 91), topRight=(53, 94)), Rectangle(bottomLeft=(31, 18), topRight=(89, 86)), Rectangle(bottomLeft=(14, 6), topRight=(51, 39)), Rectangle(bottomLeft=(90, 63), topRight=(91, 81)), Rectangle(bottomLeft=(10, 36), topRight=(44, 66)), Rectangle(bottomLeft=(53, 24), topRight=(56, 93)), Rectangle(bottomLeft=(36, 49), topRight=(78, 66)), Rectangle(bottomLeft=(18, 24), topRight=(81, 35)), Rectangle(bottomLeft=(4, 18), topRight=(78, 55)), Rectangle(bottomLeft=(45, 41), topRight=(65, 62)), Rectangle(bottomLeft=(8, 24), topRight=(86, 41)), Rectangle(bottomLeft=(5, 55), topRight=(90, 91)), Rectangle(bottomLeft=(52, 22), topRight=(65, 37)), Rectangle(bottomLeft=(3, 40), topRight=(77, 60)), Rectangle(bottomLeft=(28, 61), topRight=(84, 90)), Rectangle(bottomLeft=(40, 14), topRight=(43, 62)), Rectangle(bottomLeft=(68, 48), topRight=(73, 71)), Rectangle(bottomLeft=(18, 23), topRight=(58, 62)), Rectangle(bottomLeft=(41, 40), topRight=(67, 88)), Rectangle(bottomLeft=(28, 21), topRight=(52, 52)), Rectangle(bottomLeft=(25, 7), topRight=(78, 67))]
@@ -55,4 +56,4 @@ rects = [Rectangle(bottomLeft=(1, 1), topRight=(59, 58)), Rectangle(bottomLeft=(
 n = len(rects)
 edgeList = edgeListGeneration(rects)
 print("Edges =", edgeList)
-rewardILP(n, edgeList)
+rewardLP(n, edgeList)
