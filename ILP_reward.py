@@ -20,24 +20,48 @@ def edgeListGeneration(rects):
                 edgeList.append((i, j))
     return edgeList
 
-def rewardILP(n, edgeList):
+def constraintListGeneration(rects):
+    constraintList = []
+    indexList = []
+    for i in range(len(rects)):
+        for j in range(len(constraintList)):
+            if i in indexList[j]:
+                pass
+            else:
+                flag = 1
+                for k in range(len(constraintList[j])):
+                    if (isIntersecting(rects[i], constraintList[j][k]) == False):
+                        flag = 0
+                        break
+                if flag:
+                    constraintList[j].append(rects[i])
+                    indexList[j].append(i)
+                    
+        for j in range(i+1, len(rects)):  
+            if (isIntersecting(rects[i], rects[j])):
+                constraintList.append([rects[i], rects[j]])
+                indexList.append([i, j])
+        
+        # print(f'{i}: {indexList}')
+
+    return constraintList, indexList
+
+def rewardILP(n, indexList):
     c = cplex.Cplex()
     c.objective.set_sense(c.objective.sense.maximize)
-    c.set_problem_name("BinaryIntegerLinearProgram")
-    t = c.variables.type
+    c.set_problem_name("IntegerLinearProgram")
+    t = c.variables.type.binary  
 
     var_names = ["x" + str(i) for i in range(n)]
-    types = [t.binary] * n  # Values are binary
-    
-    indices = c.variables.add(names = var_names, lb = [0] * n, ub = [1] * n, types = types)
+    c.variables.add(names=var_names, types=[t] * n)
 
     c.objective.set_linear([(name, 1.0) for name in var_names])
 
-    for i, j in edgeList:
+    for indices in indexList:
         c.linear_constraints.add(
-            lin_expr = [cplex.SparsePair(ind = [var_names[i], var_names[j]], val = [1.0, 1.0])],
-            senses = ["L"],
-            rhs = [1.0]
+            lin_expr=[cplex.SparsePair(ind=[var_names[i] for i in indices], val=[1.0] * len(indices))],
+            senses=["L"],  
+            rhs=[1.0]      
         )
 
     c.solve()
@@ -56,3 +80,29 @@ n = len(rects)
 edgeList = edgeListGeneration(rects)
 print("Edges =", edgeList)
 rewardILP(n, edgeList)
+
+
+
+
+"""
+    # c = cplex.Cplex()
+    # c.objective.set_sense(c.objective.sense.maximize)
+    # c.set_problem_name("BinaryIntegerLinearProgram")
+    # t = c.variables.type
+
+    # var_names = ["x" + str(i) for i in range(n)]
+    # types = [t.binary] * n  # Values are binary
+    
+    # indices = c.variables.add(names = var_names, lb = [0] * n, ub = [1] * n, types = types)
+
+    # c.objective.set_linear([(name, 1.0) for name in var_names])
+
+    # for i, j in edgeList:
+    #     c.linear_constraints.add(
+    #         lin_expr = [cplex.SparsePair(ind = [var_names[i], var_names[j]], val = [1.0, 1.0])],
+    #         senses = ["L"],
+    #         rhs = [1.0]
+    #     )
+
+    # c.solve()
+"""
